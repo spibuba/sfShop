@@ -14,6 +14,12 @@
             <li role="presentation"><a href="{{ path('products_list') }}">Produkty</a></li>
             <li role="presentation"><a href="{{path('basket')}}">Koszyk</a></li>
         </ul>
+        {% for flashMessage in app.session.flashbag.get('notice') %}
+            <div class="flash-notice">
+                <p class="alert-success">{{ flashMessage }}</p>
+            </div>
+        {% endfor %}
+        
         {% block body %}{% endblock %}
         {% block javascripts %}
             <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>

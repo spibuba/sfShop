@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 class BasketController extends Controller
 {
@@ -12,20 +13,43 @@ class BasketController extends Controller
      * @Route("/koszyk", name="basket")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
+        //get(oczekiwana wartosc, default)
+        $session = $request->getSession();
+        $basket = $session->get('basket', array());
+        $products = $this->getProducts();
+        
+        $productsInBasket = array();
+        
+        foreach($basket as $id => $b)
+        {
+            $productsInBasket[] = $products[$id];
+        }
+        
+        //dump($basket);
+        
         return array(
-                // ...
-            );    
+            'products_in_basket' => $productsInBasket,
+        );    
         
     }
 
     /**
-     * @Route("/koszyk/{id}/dodaj")
+     * @Route("/koszyk/{id}/dodaj", name="basket_add")
      * @Template()
      */
-    public function addAction($id)
+    public function addAction($id, Request $request)
     {
+        $session = $request ->getSession();
+        
+        $basket = $session->get('basket', array());
+        
+        $basket[$id] = 1;
+        
+        $session->set('basket', $basket);
+        $this->addFlash('notice', 'Produkt dodany do koszyka');
+        return $this->redirectToRoute('basket');
         return array(
                 // ...
             );    
@@ -78,6 +102,25 @@ class BasketController extends Controller
                 // ...
             );    
         
+    }
+    
+    private function getProducts()
+    {
+        $file = file('product.txt'); 
+        $products = array(); 
+        foreach ($file as $p) 
+        { 
+            //explode(znak rozdzielajacy, trim - usuwa biale znaki)
+            $e = explode(':', trim($p)); 
+            $products[$e[0]] = array( 
+                'id' => $e[0], 
+                'name' => $e[1],
+                'price' => $e[2],
+                'desc' => $e[3],
+            ); 
+        }
+        
+        return $products;
     }
 
 }
