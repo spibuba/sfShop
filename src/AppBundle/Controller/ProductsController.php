@@ -20,6 +20,7 @@ class ProductsController extends Controller
         ]);
     }
     
+    
     private function getProducts()
     {
         $file = file('product.txt'); 
