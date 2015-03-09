@@ -41,30 +41,41 @@ class BasketController extends Controller
      */
     public function addAction($id, Request $request)
     {
-        $session = $request ->getSession();
-        
+        $session = $request ->getSession();        
         $basket = $session->get('basket', array());
         
+        //ustalenie ilości na sztywno - 1 :)
         $basket[$id] = 1;
         
+        //zapisanie w sesji
         $session->set('basket', $basket);
+        
+        //flash message oprócz potwqierdzenia operacji zabezpiecza nas
+        //przed kolejnym dodaniem produktu przez odświeżenie stronył
         $this->addFlash('notice', 'Produkt dodany do koszyka');
-        return $this->redirectToRoute('basket');
-        return array(
-                // ...
-            );    
+        return $this->redirectToRoute('basket'); 
         
     }
 
     /**
-     * @Route("/koszyk/{id}/usun")
+     * @Route("/koszyk/{id}/usun", name="basket_del")
      * @Template()
      */
-    public function removeAction($id)
+    public function removeAction($id, Request $request)
     {
-        return array(
-                // ...
-            );    
+        //pobranie aktualnej sesji, odnalezienie w niej tablicy basket
+        //oraz przypisanie jej do zmiennej $basket
+        $session = $request->getSession();
+        $basket = $session->get('basket');
+        
+        //usunięcie z tablicy basket obiektu o id przekazanym z tabeli
+        unset($basket[$id]);
+        
+        //zapisanie zmian w tablicy
+        $session->set('basket', $basket);
+        
+        $this->addFlash('notice', 'Produkt usunięty z koszyka');
+        return $this->redirectToRoute('basket');
         
     }
 
@@ -81,15 +92,21 @@ class BasketController extends Controller
     }
 
     /**
-     * @Route("/koszyk/wyczysc")
+     * @Route("/koszyk/wyczysc", name="basket_clear")
      * @Template()
      */
-    public function clearAction()
+    public function clearAction(Request $request)
     {
-        return array(
-                // ...
-            );    
+        $session = $request->getSession();
+        $basket = $session->get('basket');
         
+        //tu wstawić pętlę foreach i sprawdzić czy zadziała, w twigu dodać przesyłanie id
+        unset($basket);
+        
+        $session->set('basket', $basket);
+        
+        $this->addFlash('alert', 'Koszyk opróżniony');
+        $this->redirectToRoute('basket');
     }
 
     /**

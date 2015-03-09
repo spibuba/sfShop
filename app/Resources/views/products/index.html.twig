@@ -27,11 +27,10 @@
                     <td>{{product.desc}}</td>
                     <td>
                         <a href="{{ path('basket_add', {'id': product.id}) }}" class="btn btn-primary">Dodaj do koszyka</a>
-                        
                     </td>
                 </tr>
-        </tbody>
             {% endfor %}
+        
         </tbody>
     </table>
 {% endblock %}
