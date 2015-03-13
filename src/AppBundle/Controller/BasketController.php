@@ -100,13 +100,14 @@ class BasketController extends Controller
         $session = $request->getSession();
         $basket = $session->get('basket');
         
-        //tu wstawić pętlę foreach i sprawdzić czy zadziała, w twigu dodać przesyłanie id
+        //usunięcie i ponowne utworzenie tablicy       
         unset($basket);
+        $basket = array(); 
         
         $session->set('basket', $basket);
         
-        $this->addFlash('alert', 'Koszyk opróżniony');
-        $this->redirectToRoute('basket');
+        $this->addFlash('notice', 'Koszyk opróżniony');
+        return $this->redirectToRoute('basket');
     }
 
     /**
