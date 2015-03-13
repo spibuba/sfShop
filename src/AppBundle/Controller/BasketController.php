@@ -69,7 +69,14 @@ class BasketController extends Controller
         $basket = $session->get('basket');
         
         //usunięcie z tablicy basket obiektu o id przekazanym z tabeli
-        unset($basket[$id]);
+        if(!empty($basket[$id]))
+        {
+            unset($basket[$id]);
+        }
+        else
+        {
+            return $this->addFlash('notice', 'Nie odnaleziono produktu');
+        }
         
         //zapisanie zmian w tablicy
         $session->set('basket', $basket);
@@ -99,12 +106,9 @@ class BasketController extends Controller
     {
         $session = $request->getSession();
         $basket = $session->get('basket');
-        
-        //usunięcie i ponowne utworzenie tablicy       
-        unset($basket);
-        $basket = array(); 
-        
-        $session->set('basket', $basket);
+                
+        //czyszczenie polegające na ustawieniu w sesji pustej tablicy basket
+        $session->set('basket', array());
         
         $this->addFlash('notice', 'Koszyk opróżniony');
         return $this->redirectToRoute('basket');
