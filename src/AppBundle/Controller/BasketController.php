@@ -22,6 +22,7 @@ class BasketController extends Controller
         
         $productsInBasket = array();
         
+        
         foreach($basket as $id => $b)
         {
             $productsInBasket[] = $products[$id];
@@ -30,6 +31,7 @@ class BasketController extends Controller
         //dump($basket);
         
         return array(
+            //klucz                      wartosc
             'products_in_basket' => $productsInBasket,
         );    
         
@@ -44,7 +46,6 @@ class BasketController extends Controller
         $session = $request ->getSession();        
         $basket = $session->get('basket', array());
         
-        //ustalenie ilości na sztywno - 1 :)
         $basket[$id] = 1;
         
         //zapisanie w sesji
@@ -59,7 +60,6 @@ class BasketController extends Controller
 
     /**
      * @Route("/koszyk/{id}/usun", name="basket_del")
-     * @Template()
      */
     public function removeAction($id, Request $request)
     {
@@ -68,20 +68,20 @@ class BasketController extends Controller
         $session = $request->getSession();
         $basket = $session->get('basket');
         
-        //usunięcie z tablicy basket obiektu o id przekazanym z tabeli
-        if(!empty($basket[$id]))
-        {
-            unset($basket[$id]);
-        }
-        else
-        {
-            return $this->addFlash('notice', 'Nie odnaleziono produktu');
-        }
         
-        //zapisanie zmian w tablicy
+        if (!array_key_exists($id, $basket)) {
+            $this->addFlash('notice', 'Nie odnaleziono produktu');
+            return $this->redirectToRoute('basket');
+        }
+              
+        unset($basket[$id]);    
+        
+        
+        //zapisanie zmian w sesji
         $session->set('basket', $basket);
+        $product = $this->getProduct($id);
         
-        $this->addFlash('notice', 'Produkt usunięty z koszyka');
+        $this->addFlash('notice', sprintf('Produkt %s usunięty z koszyka', $product['name']));
         return $this->redirectToRoute('basket');
         
     }
@@ -143,6 +143,13 @@ class BasketController extends Controller
         }
         
         return $products;
+    }
+    
+    private function getProduct($id){
+        
+        $products = $this->getProducts();
+        
+        return $products[$id];
     }
 
 }
