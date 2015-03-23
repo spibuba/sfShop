@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Category
  *
  * @ORM\Table(name="category")
- * @ORM\Entity
+ * @ORM\Entity()
  */
 class Category
 {
@@ -32,14 +32,14 @@ class Category
     /**
      *
      * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
-     */    
+     */
     private $products;
-    
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->products = new ArrayCollection();
     }
-    
+
     /**
      * Get id
      *
@@ -104,5 +104,9 @@ class Category
     public function getProducts()
     {
         return $this->products;
+    }
+    
+    public function __toString() {
+        return $this->name;
     }
 }

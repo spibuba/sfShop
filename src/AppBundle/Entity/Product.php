@@ -50,11 +50,11 @@ class Product
     private $amount;
 
     /**
-     *
-     * @ORM\ManyToOne(targetEntity="Category", inversedBy="Products")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="products")
      */
     private $category;
-    
+
+
     /**
      * Get id
      *
@@ -114,7 +114,7 @@ class Product
     /**
      * Set price
      *
-     * @param decimal $price
+     * @param string $price
      * @return Product
      */
     public function setPrice($price)
@@ -127,7 +127,7 @@ class Product
     /**
      * Get price
      *
-     * @return decimal 
+     * @return string 
      */
     public function getPrice()
     {

@@ -7,6 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
+use AppBundle\Entity\Product;
+
 class BasketController extends Controller
 {
     /**
@@ -15,75 +17,46 @@ class BasketController extends Controller
      */
     public function indexAction(Request $request)
     {
-        //get(oczekiwana wartosc, default)
-        $session = $request->getSession();
-        $basket = $session->get('basket', array());
-        $products = $this->getProducts();
-        
-        $productsInBasket = array();
-        
-        
-        foreach($basket as $id => $b)
-        {
-            $productsInBasket[] = $products[$id];
-        }
-        
-        //dump($basket);
-        
-        return array(
-            //klucz                      wartosc
-            'products_in_basket' => $productsInBasket,
-        );    
-        
+        return $this->render('Basket/index.html.twig',  
+                array ( 'basket' => $this->get('basket')));
     }
 
     /**
      * @Route("/koszyk/{id}/dodaj", name="basket_add")
-     * @Template()
      */
-    public function addAction($id, Request $request)
+    public function addAction(Product $product)
     {
-        $session = $request ->getSession();        
-        $basket = $session->get('basket', array());
+        if (is_null($product)){
+            $this->addFlash('notice', 'Nie znaleziono produktu o takim id');
+            return $this->redirectToRoute('basket');
+        }
         
-        $basket[$id] = 1;
+        $basket = $this->get('basket');
+        $basket->add($product);
         
-        //zapisanie w sesji
-        $session->set('basket', $basket);
-        
-        //flash message oprócz potwqierdzenia operacji zabezpiecza nas
-        //przed kolejnym dodaniem produktu przez odświeżenie stronył
-        $this->addFlash('notice', 'Produkt dodany do koszyka');
-        return $this->redirectToRoute('basket'); 
-        
+        $this->addFlash('notice', sprintf('Produkt "%s" został dodany do koszyka', $product->getName()));
+
+        return $this->redirectToRoute('basket');
     }
 
     /**
-     * @Route("/koszyk/{id}/usun", name="basket_del")
+     * @Route("/koszyk/{id}/usun", name="basket_remove")
      */
-    public function removeAction($id, Request $request)
+    public function removeAction(Product $product)
     {
-        //pobranie aktualnej sesji, odnalezienie w niej tablicy basket
-        //oraz przypisanie jej do zmiennej $basket
-        $session = $request->getSession();
-        $basket = $session->get('basket');
+        $basket = $this->get('basket');
         
+        try {
+            $basket->remove($product);
         
-        if (!array_key_exists($id, $basket)) {
-            $this->addFlash('notice', 'Nie odnaleziono produktu');
-            return $this->redirectToRoute('basket');
+            $this->addFlash('notice', sprintf('Product %s został usunięty z koszyka', $product->getName()));
+            
+        } catch (\Exception $ex) {
+        
+            $this->addFlash('notice', $ex->getMessage());
         }
-              
-        unset($basket[$id]);    
         
-        
-        //zapisanie zmian w sesji
-        $session->set('basket', $basket);
-        $product = $this->getProduct($id);
-        
-        $this->addFlash('notice', sprintf('Produkt %s usunięty z koszyka', $product['name']));
         return $this->redirectToRoute('basket');
-        
     }
 
     /**
@@ -94,24 +67,23 @@ class BasketController extends Controller
     {
         return array(
                 // ...
-            );    
-        
+            );
     }
 
     /**
      * @Route("/koszyk/wyczysc", name="basket_clear")
      * @Template()
      */
-    public function clearAction(Request $request)
+    public function clearAction()
     {
-        $session = $request->getSession();
-        $basket = $session->get('basket');
-                
-        //czyszczenie polegające na ustawieniu w sesji pustej tablicy basket
-        $session->set('basket', array());
+        $this
+         ->get('basket')
+         ->clear();
         
-        $this->addFlash('notice', 'Koszyk opróżniony');
-        return $this->redirectToRoute('basket');
+        $this
+         ->addFlash('notice', 'Koszyk został opróżniony');
+        return $this
+                ->redirectToRoute('basket');
     }
 
     /**
@@ -122,33 +94,30 @@ class BasketController extends Controller
     {
         return array(
                 // ...
-            );    
-        
+            );
     }
-    
+
     private function getProducts()
     {
-        $file = file('product.txt'); 
-        $products = array(); 
-        foreach ($file as $p) 
-        { 
-            //explode(znak rozdzielajacy, trim - usuwa biale znaki)
-            $e = explode(':', trim($p)); 
-            $products[$e[0]] = array( 
-                'id' => $e[0], 
+        $file = file('product.txt');
+        $products = array();
+        foreach ($file as $p) {
+            $e = explode(':', trim($p));
+            $products[$e[0]] = array(
+                'id' => $e[0],
                 'name' => $e[1],
                 'price' => $e[2],
                 'desc' => $e[3],
-            ); 
+            );
         }
-        
+
         return $products;
     }
-    
-    private function getProduct($id){
-        
+
+    private function getProduct($id)
+    {
         $products = $this->getProducts();
-        
+
         return $products[$id];
     }
 
