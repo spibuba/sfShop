@@ -1,0 +1,30 @@
+{# empty Twig template #}
+{% extends "::base.html.twig" %}
+
+{% block title %}Szczegóły produktu{% endblock %}
+    
+{% block body %}
+    <h1>Szczegóły produktu</h1>
+    
+    <table class="table table-hover">
+        
+        <thead>
+            <div align="left">
+                {{ product.name }}
+            </div>
+        </thead>
+            <div align="left">
+                <img src="http://placehold.it/240x200" alt="" class="img-thumbnail">
+            </div>
+            <div align="center">
+                    Cena: {{ product.price }}
+            </div>
+            <div>
+                {{ product.description }}
+            </div>
+        
+        
+        </tbody>
+        
+    </table>
+{% endblock %}

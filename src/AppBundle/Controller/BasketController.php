@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Entity\Product;
 
@@ -20,7 +21,7 @@ class BasketController extends Controller
         return $this->render('Basket/index.html.twig',  
                 array ( 'basket' => $this->get('basket')));
     }
-
+        
     /**
      * @Route("/koszyk/{id}/dodaj", name="basket_add")
      */
@@ -32,6 +33,7 @@ class BasketController extends Controller
         }
         
         $basket = $this->get('basket');
+        
         $basket->add($product);
         
         $this->addFlash('notice', sprintf('Produkt "%s" został dodany do koszyka', $product->getName()));
@@ -96,7 +98,37 @@ class BasketController extends Controller
                 // ...
             );
     }
-
+    
+    
+    /**
+     * @Route("/koszyk/contents", name="basket_contents")
+     * @Template()
+     */
+    public function showContentsAction(Request $request)
+    {
+        return $this->render('Basket/contents.html.twig',  
+                array ( 'basket' => $this->get('basket')));
+    }
+    
+    /**
+     * 
+     * @route (name="basket_amount")
+     */
+    public function getAmountAction(Request $request)
+    {
+        $product = $this->get('basket');
+        
+        
+        
+        $sum = 0;
+        
+            $s = $this->get('basket');
+            
+        
+        
+        return new Response('do zrobienia');
+    }
+    
     private function getProducts()
     {
         $file = file('product.txt');

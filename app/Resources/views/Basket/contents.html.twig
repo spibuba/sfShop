@@ -1,0 +1,34 @@
+{% block head %}
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    {% endblock %}
+{% endblock %}
+    
+{% block body %}
+    {% set sum = 0 %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p>Lista produktów:</p>
+        </div>
+        
+        {% for product in basket.products %}
+            <table class="table">
+                <div> 
+                    {{ product.name }}
+                    {{ product.price }}
+                    {% set sum = sum + product.price %}
+                </div>
+            </table>
+        {% endfor %}
+        
+    </div>
+
+    <div class="panel panel-default">
+        <p>Suma: {{ sum }} zł</p>
+    </div>
+        
+    
+    
+
+
+{% endblock %}

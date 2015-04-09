@@ -38,9 +38,15 @@
             </div>
                     
             <div class="row">
+                
                 <div class="col-md-2">
                     {{ render(controller('AppBundle:Category:list')) }}
+                    Zawartość koszyka:
+                    
+                    {{ render(app.request.baseUrl ~ '/koszyk/contents') }}
                 </div>
+                
+                
                 <div class="col-md-10">
                     {% for flashMessage in app.session.flashbag.get('notice') %}
                         <div class="alert alert-success alert-dismissible" role="alert">
@@ -52,13 +58,18 @@
                     {% block body %}{% endblock %}
                             
                 </div>
+                    
             </div>    
             
-            <div class="row">
-                <div class="col-md-12">
-                    ShopApp
-                </div>
-            </div>
+                    
+                        {#% for product in basket.products %#}
+                            {#{ render(controller('AppBundle:Basket:index')) }}
+                        {#% endfor %#}
+                    
+                
+            
+                
+           
             
         </div>
         

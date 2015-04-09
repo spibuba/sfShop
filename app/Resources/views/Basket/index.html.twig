@@ -34,7 +34,12 @@
                     <td colspan="5">Koszyk jest pusty</td>
                 </tr>
             {% endfor %}
+            Suma:
+            {#<a href="{{ path('basket_amount') }}" class="btn btn-danger">usuń</a>#}
+
+            {% render(controller('AppBundle:Basket:getAmount'))  %}
         </tbody>
     </table>
+            <a href="{{ path('basket_clear') }}" class="btn btn-warning">Zamów</a>
 
 {% endblock %}

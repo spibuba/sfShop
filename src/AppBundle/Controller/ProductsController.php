@@ -46,5 +46,19 @@ class ProductsController extends Controller
             'form' => $form->createView(),
         ]);
     }
+    
+    
+    /**
+     * @Route("/produkty/pokaz/{id}", name="products_show")
+     * 
+     */
+    public function showAction(Request $request, $id)
+    {
+        
+        return $this->render("Products/show.html.twig",
+                array( 'product' => $this->getDoctrine()
+                ->getEntityManager()
+                ->getReference('AppBundle:Product', $id)));
+    }
             
 }

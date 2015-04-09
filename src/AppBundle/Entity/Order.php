@@ -1,0 +1,484 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ordering
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\orderingRepository")
+ */
+class Order
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="product_id", type="integer")
+     */
+    private $productId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="first_name", type="string", length=255)
+     */
+    private $firstName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="last_name", type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="address", type="text")
+     */
+    private $address;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="postal_code", type="string", length=6)
+     */
+    private $postalCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="city", type="string", length=100)
+     */
+    private $city;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="country", type="string", length=50)
+     */
+    private $country;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="phone", type="integer")
+     */
+    private $phone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="shipping_address", type="text")
+     */
+    private $shippingAddress;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="shipping_postal_code", type="string", length=6)
+     */
+    private $shippingPostalCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="shipping_city", type="string", length=100)
+     */
+    private $shippingCity;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="shipping_country", type="string", length=50)
+     */
+    private $shippingCountry;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="company_name", type="string", length=255)
+     */
+    private $companyName;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="alt_phone", type="integer")
+     */
+    private $altPhone;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set orderId
+     *
+     * @param integer $orderId
+     * @return ordering
+     */
+    public function setOrderId($orderId)
+    {
+        $this->orderId = $orderId;
+
+        return $this;
+    }
+
+    /**
+     * Get orderId
+     *
+     * @return integer 
+     */
+    public function getOrderId()
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * Set firstName
+     *
+     * @param string $firstName
+     * @return ordering
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    /**
+     * Get firstName
+     *
+     * @return string 
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * Set lastName
+     *
+     * @param string $lastName
+     * @return ordering
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string 
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     * @return ordering
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string 
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set postalCode
+     *
+     * @param string $postalCode
+     * @return ordering
+     */
+    public function setPostalCode($postalCode)
+    {
+        $this->postalCode = $postalCode;
+
+        return $this;
+    }
+
+    /**
+     * Get postalCode
+     *
+     * @return string 
+     */
+    public function getPostalCode()
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * Set city
+     *
+     * @param string $city
+     * @return ordering
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return string 
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * Set country
+     *
+     * @param string $country
+     * @return ordering
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return string 
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return ordering
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set phone
+     *
+     * @param integer $phone
+     * @return ordering
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return integer 
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Set shippingAddress
+     *
+     * @param string $shippingAddress
+     * @return ordering
+     */
+    public function setShippingAddress($shippingAddress)
+    {
+        $this->shippingAddress = $shippingAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get shippingAddress
+     *
+     * @return string 
+     */
+    public function getShippingAddress()
+    {
+        return $this->shippingAddress;
+    }
+
+    /**
+     * Set shippingPostalCode
+     *
+     * @param string $shippingPostalCode
+     * @return ordering
+     */
+    public function setShippingPostalCode($shippingPostalCode)
+    {
+        $this->shippingPostalCode = $shippingPostalCode;
+
+        return $this;
+    }
+
+    /**
+     * Get shippingPostalCode
+     *
+     * @return string 
+     */
+    public function getShippingPostalCode()
+    {
+        return $this->shippingPostalCode;
+    }
+
+    /**
+     * Set shippingCity
+     *
+     * @param string $shippingCity
+     * @return ordering
+     */
+    public function setShippingCity($shippingCity)
+    {
+        $this->shippingCity = $shippingCity;
+
+        return $this;
+    }
+
+    /**
+     * Get shippingCity
+     *
+     * @return string 
+     */
+    public function getShippingCity()
+    {
+        return $this->shippingCity;
+    }
+
+    /**
+     * Set shippingCountry
+     *
+     * @param string $shippingCountry
+     * @return ordering
+     */
+    public function setShippingCountry($shippingCountry)
+    {
+        $this->shippingCountry = $shippingCountry;
+
+        return $this;
+    }
+
+    /**
+     * Get shippingCountry
+     *
+     * @return string 
+     */
+    public function getShippingCountry()
+    {
+        return $this->shippingCountry;
+    }
+
+    /**
+     * Set companyName
+     *
+     * @param string $companyName
+     * @return ordering
+     */
+    public function setCompanyName($companyName)
+    {
+        $this->companyName = $companyName;
+
+        return $this;
+    }
+
+    /**
+     * Get companyName
+     *
+     * @return string 
+     */
+    public function getCompanyName()
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * Set altPhone
+     *
+     * @param integer $altPhone
+     * @return ordering
+     */
+    public function setAltPhone($altPhone)
+    {
+        $this->altPhone = $altPhone;
+
+        return $this;
+    }
+
+    /**
+     * Get altPhone
+     *
+     * @return integer 
+     */
+    public function getAltPhone()
+    {
+        return $this->altPhone;
+    }
+}
