@@ -2,12 +2,12 @@
 
 namespace AppBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Request;
-
 use AppBundle\Entity\Category;
+use AppBundle\Entity\Product;
 use AppBundle\Form\ProductType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class ProductsController extends Controller
 {
@@ -49,16 +49,16 @@ class ProductsController extends Controller
     
     
     /**
-     * @Route("/produkty/pokaz/{id}", name="products_show")
+     * @Route("/produkt/{id}", name="products_show")
      * 
      */
-    public function showAction(Request $request, $id)
+    public function showAction(Product $product)
     {
         
-        return $this->render("Products/show.html.twig",
-                array( 'product' => $this->getDoctrine()
-                ->getEntityManager()
-                ->getReference('AppBundle:Product', $id)));
+        return $this->render("Products/show.html.twig", [
+                'product' => $product
+        ]);
+        
     }
             
 }

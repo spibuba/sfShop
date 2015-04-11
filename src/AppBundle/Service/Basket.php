@@ -22,6 +22,10 @@ class Basket
     {
         $products = $this->getProducts();
         
+        if ($product->getAmount() <= 0){
+            throw new \Exception('Produkt, który próbujesz dodać jest już niedostępny');
+        }
+        
         if (!array_key_exists($product->getId(), $products)) {
             $products[$product->getId()] = array(
                'id'         =>$product->getId(),
@@ -60,5 +64,27 @@ class Basket
         //lub $this->session->set('basket', array());
         
         return true;
+    }
+    
+    public function getPrice()
+    {
+        $price = 0;
+        foreach($this->getProducts() as $product)
+        {
+            $price += $product['price'] * $product['quantity'];
+        }
+        
+        return ($price);
+    }
+    
+    public function getQuantity()
+    {
+        $quantity = 0;
+        foreach($this->getProducts() as $product)
+        {
+            $quantity += $product['quantity'];
+        }
+        
+        return ($quantity);
     }
 }

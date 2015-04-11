@@ -7,35 +7,40 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use AppBundle\Entity\Product;
 
-class BasketController extends Controller
-{
+class BasketController extends Controller {
+
     /**
      * @Route("/koszyk", name="basket")
      * @Template()
      */
-    public function indexAction(Request $request)
-    {
-        return $this->render('Basket/index.html.twig',  
-                array ( 'basket' => $this->get('basket')));
+    public function indexAction(Request $request) {
+        return $this->render('Basket/index.html.twig', array('basket' => $this->get('basket')));
     }
-        
+
     /**
      * @Route("/koszyk/{id}/dodaj", name="basket_add")
      */
-    public function addAction(Product $product)
-    {
-        if (is_null($product)){
-            $this->addFlash('notice', 'Nie znaleziono produktu o takim id');
+    public function addAction(Request $request, Product $product = null) {
+        if (is_null($product)) {
+            $this->addFlash('error', 'Nie znaleziono produktu o takim id');
             return $this->redirectToRoute('basket');
         }
-        
-        $basket = $this->get('basket');
-        
-        $basket->add($product);
-        
+
+
+        try {
+
+            $basket = $this->get('basket');
+            $basket->add($product);
+        } catch (\Exception $ex) {
+
+            $this->addFlash('error', $ex->getMessage());
+            //powrót do strony z której przyszliśmy
+            return $this->redirect($request->headers->get('referer'));
+        }
+
+
         $this->addFlash('notice', sprintf('Produkt "%s" został dodany do koszyka', $product->getName()));
 
         return $this->redirectToRoute('basket');
@@ -44,20 +49,18 @@ class BasketController extends Controller
     /**
      * @Route("/koszyk/{id}/usun", name="basket_remove")
      */
-    public function removeAction(Product $product)
-    {
+    public function removeAction(Product $product) {
         $basket = $this->get('basket');
-        
+
         try {
             $basket->remove($product);
-        
+
             $this->addFlash('notice', sprintf('Product %s został usunięty z koszyka', $product->getName()));
-            
         } catch (\Exception $ex) {
-        
+
             $this->addFlash('notice', $ex->getMessage());
         }
-        
+
         return $this->redirectToRoute('basket');
     }
 
@@ -65,72 +68,46 @@ class BasketController extends Controller
      * @Route("/koszyk/{id}/zaktualizuj-ilosc/{quantity}")
      * @Template()
      */
-    public function updateAction($id, $quantity)
-    {
+    public function updateAction($id, $quantity) {
         return array(
                 // ...
-            );
+        );
     }
 
     /**
      * @Route("/koszyk/wyczysc", name="basket_clear")
      * @Template()
      */
-    public function clearAction()
-    {
+    public function clearAction() {
         $this
-         ->get('basket')
-         ->clear();
-        
+                ->get('basket')
+                ->clear();
+
         $this
-         ->addFlash('notice', 'Koszyk został opróżniony');
+                ->addFlash('notice', 'Koszyk został opróżniony');
         return $this
-                ->redirectToRoute('basket');
+                        ->redirectToRoute('basket');
     }
 
     /**
      * @Route("/koszyk/kup")
      * @Template()
      */
-    public function buyAction()
-    {
+    public function buyAction() {
         return array(
                 // ...
-            );
+        );
     }
-    
-    
+
     /**
      * @Route("/koszyk/contents", name="basket_contents")
      * @Template()
      */
-    public function showContentsAction(Request $request)
-    {
-        return $this->render('Basket/contents.html.twig',  
-                array ( 'basket' => $this->get('basket')));
+    public function showContentsAction(Request $request) {
+        return $this->render('Basket/contents.html.twig', array('basket' => $this->get('basket')));
     }
-    
-    /**
-     * 
-     * @route (name="basket_amount")
-     */
-    public function getAmountAction(Request $request)
-    {
-        $product = $this->get('basket');
-        
-        
-        
-        $sum = 0;
-        
-            $s = $this->get('basket');
-            
-        
-        
-        return new Response('do zrobienia');
-    }
-    
-    private function getProducts()
-    {
+
+    private function getProducts() {
         $file = file('product.txt');
         $products = array();
         foreach ($file as $p) {
@@ -146,8 +123,7 @@ class BasketController extends Controller
         return $products;
     }
 
-    private function getProduct($id)
-    {
+    private function getProduct($id) {
         $products = $this->getProducts();
 
         return $products[$id];
