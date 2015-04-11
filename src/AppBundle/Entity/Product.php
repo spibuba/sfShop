@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Product
@@ -25,6 +26,9 @@ class Product
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * 
+     * @Assert\NotBlank()
+     * @Assert\Length(min=5, minMessage="Tytuł musi mieć conajmniej znaków")
      */
     private $name;
 
@@ -32,6 +36,7 @@ class Product
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -39,20 +44,33 @@ class Product
      * @var string
      *
      * @ORM\Column(name="price", type="decimal", precision=10, scale=2)
+     * @Assert\NotBlank()
+     * @Assert\Range(min=0.01, minMessage="Cena musi być większa lub równa {{ limit }} zł")
      */
-    private $price;
+    private $price = 0;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="amount", type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Range(min=1, minMessage="Ilość musi być większa lub równa {{ limit }}")
      */
-    private $amount;
+    private $amount = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="products")
+     * @Assert\NotNull(message="Proszę wybrać odpowiednią kategorię")
      */
     private $category;
+    
+    /**
+     *
+     * @var ArrayCollection
+     * 
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="product")
+     */
+    private $comments;
 
 
     /**
@@ -178,5 +196,45 @@ class Product
     public function getCategory()
     {
         return $this->category;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add comments
+     *
+     * @param \AppBundle\Entity\Comment $comments
+     * @return Product
+     */
+    public function addComment(\AppBundle\Entity\Comment $comments)
+    {
+        $this->comments[] = $comments;
+
+        return $this;
+    }
+
+    /**
+     * Remove comments
+     *
+     * @param \AppBundle\Entity\Comment $comments
+     */
+    public function removeComment(\AppBundle\Entity\Comment $comments)
+    {
+        $this->comments->removeElement($comments);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

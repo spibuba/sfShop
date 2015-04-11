@@ -1,25 +1,3 @@
-{% extends "::base.html.twig" %}
-
-{% block title %}Produkty{% endblock %}
-
-{% block body %}
-
-    <h1>Lista produktów</h1>
-
-    <form action="{{ path('product_search') }}" class="navbar-form" role="search">
-        <div class="form-group">
-            <input type="text" name="query" class="form-control" placeholder="Szukaj produktu">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-
-    <a href="{{ path('products_add') }}" class="btn btn-primary" title="Dodaj nowy produkt">Dodaj nowy produkt</a>
-
-    {% for product in products %}
-
-        {% if loop.first or (loop.index % 4) == 0  %}
-            <div class="row">
-            {% endif %} 
 
             <div class="col-sm-6 col-md-3">
                 <div class="thumbnail clearfix">
@@ -41,15 +19,3 @@
                     </div>
                 </div>
             </div>
-
-            {% if loop.last or (loop.index % 4) == 0  %}
-            </div>
-        {% endif %}
-
-    {% endfor %}
-
-    <div class="row">
-        {{ knp_pagination_render(products) }}
-    </div>
-
-{% endblock %}
