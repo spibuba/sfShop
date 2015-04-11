@@ -2,26 +2,28 @@
 
 namespace AppBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Entity\Comment;
+use AppBundle\Entity\Product;
+use AppBundle\Form\CommentType;
+use AppBundle\Form\ProductFilterType;
+use AppBundle\Form\ProductType;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\View\TwitterBootstrapView;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Pagerfanta\Pagerfanta;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\View\TwitterBootstrapView;
-
-use AppBundle\Entity\Product;
-use AppBundle\Form\ProductType;
-use AppBundle\Form\ProductFilterType;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Product controller.
  *
  * @Route("/admin/product")
  */
-class ProductController extends Controller
-{
+class ProductController extends Controller {
+
     /**
      * Lists all Product entities.
      *
@@ -29,8 +31,7 @@ class ProductController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
-    {
+    public function indexAction() {
         list($filterForm, $queryBuilder) = $this->filter();
 
         list($entities, $pagerHtml) = $this->paginator($queryBuilder);
@@ -43,11 +44,10 @@ class ProductController extends Controller
     }
 
     /**
-    * Create filter form and process filter request.
-    *
-    */
-    protected function filter()
-    {
+     * Create filter form and process filter request.
+     *
+     */
+    protected function filter() {
         $request = $this->getRequest();
         $session = $request->getSession();
         $filterForm = $this->createForm(new ProductFilterType());
@@ -84,11 +84,10 @@ class ProductController extends Controller
     }
 
     /**
-    * Get results from paginator and get paginator view.
-    *
-    */
-    protected function paginator($queryBuilder)
-    {
+     * Get results from paginator and get paginator view.
+     *
+     */
+    protected function paginator($queryBuilder) {
         // Paginator
         $adapter = new DoctrineORMAdapter($queryBuilder);
         $pagerfanta = new Pagerfanta($adapter);
@@ -98,8 +97,7 @@ class ProductController extends Controller
 
         // Paginator - route generator
         $me = $this;
-        $routeGenerator = function($page) use ($me)
-        {
+        $routeGenerator = function($page) use ($me) {
             return $me->generateUrl('product', array('page' => $page));
         };
 
@@ -122,9 +120,8 @@ class ProductController extends Controller
      * @Method("POST")
      * @Template("AppBundle:Product:new.html.twig")
      */
-    public function createAction(Request $request)
-    {
-        $entity  = new Product();
+    public function createAction(Request $request) {
+        $entity = new Product();
         $form = $this->createForm(new ProductType(), $entity);
         $form->bind($request);
 
@@ -139,7 +136,7 @@ class ProductController extends Controller
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
 
@@ -150,14 +147,13 @@ class ProductController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
-    {
+    public function newAction() {
         $entity = new Product();
-        $form   = $this->createForm(new ProductType(), $entity);
+        $form = $this->createForm(new ProductType(), $entity);
 
         return array(
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
 
@@ -168,22 +164,17 @@ class ProductController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('AppBundle:Product')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Product entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
+    public function showAction(Product $product) 
+            {
+        $comment = new Comment();
+        $comment->setProduct($product);
+        
+        $form = $this->createForm(new CommentType(), $comment);
+        
+        return $this->render('Products/show.html.twig', array(
+            'product' => $product,
+            'form' => $form->createView()
+        ));
     }
 
     /**
@@ -193,8 +184,7 @@ class ProductController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
-    {
+    public function editAction($id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('AppBundle:Product')->find($id);
@@ -207,8 +197,8 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -220,8 +210,7 @@ class ProductController extends Controller
      * @Method("PUT")
      * @Template("AppBundle:Product:edit.html.twig")
      */
-    public function updateAction(Request $request, $id)
-    {
+    public function updateAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('AppBundle:Product')->find($id);
@@ -245,8 +234,8 @@ class ProductController extends Controller
         }
 
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -257,8 +246,7 @@ class ProductController extends Controller
      * @Route("/{id}", name="product_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
-    {
+    public function deleteAction(Request $request, $id) {
         $form = $this->createDeleteForm($id);
         $form->bind($request);
 
@@ -285,13 +273,13 @@ class ProductController extends Controller
      *
      * @param mixed $id The entity id
      *
-     * @return Symfony\Component\Form\Form The form
+     * @return Form The form
      */
-    private function createDeleteForm($id)
-    {
+    private function createDeleteForm($id) {
         return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
+                        ->add('id', 'hidden')
+                        ->getForm()
         ;
     }
+
 }
