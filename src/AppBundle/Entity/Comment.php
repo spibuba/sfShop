@@ -66,7 +66,14 @@ class Comment
      * @ORM\Column(name="verified", type="boolean")
      */
     private $verified = false;
-
+    
+    /**
+     * @var User
+     * 
+     * @ORM\ManyToOne(targetEntity="user", inversedBy="Comments")
+     */
+    private $user;
+    
     public function __construct()
     {
         $this->createdAt = new \DateTime("now");
@@ -218,5 +225,28 @@ class Comment
     public function getProduct()
     {
         return $this->product;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \AppBundle\Entity\user $user
+     * @return Comment
+     */
+    public function setUser(\AppBundle\Entity\user $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \AppBundle\Entity\user 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

@@ -25,38 +25,44 @@
 
     <h2> Komentarze</h2>
 
-    <form method="post" novalidate>
+    {% if not app.user %}
+        <p>Aby dodawać komentarze musisz się <a href="{{ path('fos_user_security_login') }}" title="formularz logowania">Zalogować</a></p>
+    {% else %}
 
-        <div class="form-group">
-            {{ form_row(form.content) }}
+        <form method="post" novalidate>
 
-            {#
-                {{ form_label(form.content) }}
-                {{ form_errors(form.content) }}
-                {{ form_widget(form.content) }}
-            #}
+            <div class="form-group">
+                {{ form_row(form.content) }}
 
-        </div>
+                {#
+                    {{ form_label(form.content) }}
+                    {{ form_errors(form.content) }}
+                    {{ form_widget(form.content) }}
+                #}
 
-        {{ form_rest(form) }}
-
-        <input class="btn btn-success" type="submit" value="Dodaj komentarz" />
-
-    </form>
-
-    <br />
-    
-    {% for comment in product.comments if comment.verified %}
-
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <p>{{ comment.content }}</p>
-                    <small>Dodany {{ comment.createdAt|date('d-m-Y') }}</small>
-                </div>
             </div>
 
+            {{ form_rest(form) }}
+
+            <input class="btn btn-success" type="submit" value="Dodaj komentarz" />
+
+        </form>
+
+    {% endif %}
+
+    <br />
+
+    {% for comment in product.comments if comment.verified %}
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p>{{ comment.content }}</p>
+                <small>Dodany {{ comment.createdAt|date('d-m-Y') }} przez {{ comment.user }}</small>
+            </div>
+        </div>
+
     {% else %}
-        
+
         <p> Nie ma jeszcze żadnych komentarzy. Dodaj swój jako pierwszy!</p>
 
     {% endfor %}

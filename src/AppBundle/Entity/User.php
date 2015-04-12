@@ -22,6 +22,13 @@ class User extends BaseUser
      */
     protected $id;
 
+    /**
+     * @var ArrayCollection
+     * 
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="user")
+     */
+    protected $comments;
+    
     public function __construct()
     {
         parent::__construct();
@@ -36,5 +43,40 @@ class User extends BaseUser
     public function getId()
     {
         return $this->id;
+    }
+    
+    
+
+    /**
+     * Add comments
+     *
+     * @param \AppBundle\Entity\comment $comments
+     * @return User
+     */
+    public function addComment(\AppBundle\Entity\comment $comments)
+    {
+        $this->comments[] = $comments;
+
+        return $this;
+    }
+
+    /**
+     * Remove comments
+     *
+     * @param \AppBundle\Entity\comment $comments
+     */
+    public function removeComment(\AppBundle\Entity\comment $comments)
+    {
+        $this->comments->removeElement($comments);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }
