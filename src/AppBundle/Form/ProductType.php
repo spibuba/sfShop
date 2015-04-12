@@ -16,11 +16,10 @@ class ProductType extends AbstractType
     {
         $builder
             ->add('category')
-            ->add('name')
+            ->add('name', 'text', array('label' => "Nazwa produktu"))
             ->add('description')
-            ->add('price', 'money')
-            ->add('amount')   
-                // ->add('nazwa', 'typ', parametry do funkcji)
+            ->add('price', 'money', array('label' => "Cena", 'currency' => 'PLN'))
+            ->add('amount')            
         ;
     }
     

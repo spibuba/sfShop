@@ -46,9 +46,7 @@
 
     <br />
     
-    {% for comment in product.comments %}
-
-        <div class="row">
+    {% for comment in product.comments if comment.verified %}
 
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -57,8 +55,6 @@
                 </div>
             </div>
 
-        </div>
-    
     {% else %}
         
         <p> Nie ma jeszcze żadnych komentarzy. Dodaj swój jako pierwszy!</p>

@@ -1,5 +1,7 @@
 <?php
+
 namespace AppBundle\Controller;
+
 use AppBundle\Entity\Category;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Product;
@@ -7,6 +9,7 @@ use AppBundle\Form\CommentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+
 class ProductsController extends Controller
 {
     /**
@@ -24,6 +27,7 @@ class ProductsController extends Controller
             $request->query->get('page', 1),
             8
         );
+
         return $this->render('products/index.html.twig', [
             'products' => $pagination,
         ]);
@@ -48,7 +52,7 @@ class ProductsController extends Controller
             $em->persist($comment);
             $em->flush();
             
-            $this->addFlash('notice', "Komentarz został pomyślnie zapisany.");
+            $this->addFlash('notice', "Komentarz został pomyślnie zapisany i oczekuje na weryfikacje");
             
             return $this->redirectToRoute('product_show', ['id' => $product->getId()]);
         }
@@ -96,4 +100,5 @@ class ProductsController extends Controller
             'products'  => $products
         ]);
     }
+
 }

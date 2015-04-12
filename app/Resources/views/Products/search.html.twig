@@ -3,34 +3,34 @@
 {% block title %}Wyniki wyszukiwania dla "{{ query }}"{% endblock %}
 
 {% block body %}
-
+    
     <h1>{{ block('title') }}</h1>
-
+    
     {% if products|length > 0 %}
-        <p>Znaleziono {{ products|length }} produktów </p>
+        <p>Znaleziono {{ products|length }} produktów.</p>
     {% else %}
-        <p>Nie znaleziono żadnych produktów spełniających kryteria</p>
+        <p>Nie znaleziono żadnych produktów spełniających kryteria wyszukiwania. Spróbuj wyszukać ponownie</p>
     {% endif %}
-
+    
     <form action="{{ path('product_search') }}" class="navbar-form" role="search">
         <div class="form-group">
-            <input type="text" name="query" value="{{ query }}" class="form-control" placeholder="Szukaj produktu">
+            <input type="text" name="query" value="{{ query }}" class="form-control" placeholder="Szukaj produktów">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default">Szukaj</button>
     </form>
-
+    
     {% for product in products %}
 
         {% if loop.first or (loop.index % 4) == 0  %}
             <div class="row">
             {% endif %} 
 
-            {% include 'Products/product.html.twig' with {'product' : product} %}
+            {% include 'products/product.html.twig' with {'product': product } %}
 
             {% if loop.last or (loop.index % 4) == 0  %}
             </div>
         {% endif %}
 
     {% endfor %}
-
+    
 {% endblock %}
