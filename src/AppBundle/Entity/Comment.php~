@@ -54,13 +54,6 @@ class Comment
     private $nbVoteDown = 0;
     
     /**
-     * @var Product
-     * 
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="comments")
-     */
-    private $product;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="verified", type="boolean")
@@ -68,12 +61,19 @@ class Comment
     private $verified = false;
     
     /**
+     * @var Product
+     * 
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="comments")
+     */
+    private $product;
+    
+    /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="user", inversedBy="comments")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="comments")
      */
     private $user;
-    
+
     public function __construct()
     {
         $this->createdAt = new \DateTime("now");

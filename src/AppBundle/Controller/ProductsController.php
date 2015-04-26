@@ -10,108 +10,115 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
-class ProductsController extends Controller {
-
+class ProductsController extends Controller
+{
     /**
      * @Route("/produkty/{id}", name="products_list", defaults={"id" = false}, requirements={"id": "\d+"})
      */
-    public function indexAction(Request $request, Category $category = null) {
+    public function indexAction(Request $request, Category $category = null)
+    {
         $getProductsQuery = $this->getDoctrine()
-                ->getRepository('AppBundle:Product')
-                ->getProductsQuery($category);
-
+            ->getRepository('AppBundle:Product')
+            ->getProductsQuery($category);
+        
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-                $getProductsQuery, $request->query->get('page', 1), 8
+            $getProductsQuery,
+            $request->query->get('page', 1),
+            8
         );
 
-        return $this->render('products/index.html.twig', [
-                    'products' => $pagination,
+        return $this->render('Products/index.html.twig', [
+            'products' => $pagination,
         ]);
     }
-
+    
     /**
-     * @Route("/produkt/{id}", name="product_show")
+     * @Route("/produkt/{slug}", name="product_show")
      */
-    public function showAction(Product $product, Request $request) {
+    public function showAction(Product $product, Request $request)
+    {
+        // pobieramy aktualnie zalogowanego użytkownika
         $user = $this->getUser();
-
+        
+        // tworzymy nowy komentarz
         $comment = new Comment();
+        // przypisujemy produkt do komentarza
         $comment->setProduct($product);
+        // przypisuje zalogowanego użytkownika do komentarz
         $comment->setUser($user);
-
+        
         $form = $this->createForm(new CommentType(), $comment);
-
+        
+        // przetwarzamy dane wysłane z formularza - jeśli jakieś dane zostały wysłane
         $form->handleRequest($request);
-
+        
+        // jeśli formularz został wysłane, a użytkownik nie jest zalogowany
         if ($form->isSubmitted() && !$user) {
-            $this->addFlash('error', 'Aby dodawać komentarze zaloguj się.');
-            return $this->redirectToRoute('product_show', ['id' => $product->getId()]);
+            $this->addFlash('danger', "Aby móc dodawać komentarze musisz się wcześniej zalogować.");
+            return $this->redirectToRoute('product_show', ['slug' => $product->getSlug()]);
         }
-
+        
+        // jeśli formularz został wysłane i wszystkie wprowadzone dane sa poprawne
         if ($form->isValid()) {
-
+            
+            // jeśli użytkownik posiada uprawnienia administratora
             if ($user->hasRole('ROLE_ADMIN')) {
-
+                // oznaczamy komentarz jako zweryfikowany
                 $comment->setVerified(true);
             }
-
+            
+            // pobieramy EntityManager
             $em = $this->getDoctrine()->getManager();
-
+            // zapisujemy komentarz do bazy danych
             $em->persist($comment);
             $em->flush();
-
+            
+            // jeśli użytkownik posiada uprawnienia admina
             if ($user->hasRole('ROLE_ADMIN')) {
-                $this->addFlash('notice', "Komentarz został pomyślnie zapisany i oczekuje na weryfikacje");
+            // if ($user->isAdmin()) {
+                $this->addFlash('success', "Komentarz został pomyślnie zapisany i opublikowany");
             } else {
-                $this->addFlash('notice', 'Komentarz zapisany pomyślnie');
+                $this->addFlash('success', "Komentarz został pomyślnie zapisany i oczekuje na weryfikacje");
             }
-
-            return $this->redirectToRoute('product_show', ['id' => $product->getId()]);
+            
+            return $this->redirectToRoute('product_show', ['slug' => $product->getSlug()]);
         }
-
-
-
-        return $this->render('products/show.html.twig', [
-                    'product' => $product,
-                    'form' => $form->createView()
+        
+        return $this->render('Products/show.html.twig', [
+            'product'   => $product,
+            'form'      => $form->createView()
         ]);
     }
-
+    
     /**
      * @Route("/szukaj", name="product_search")
      */
-    public function searchAction(Request $request) {
-        $query = $request->query->get('query');
-
-        // validacja wartości przekazanej w parametrze
-//        $constraint = new NotBlank();
-//        $errors = $this->get('validator')->validate($query, $constraint);
-        // alternatywny sposób zapisu zapytania
-//        $products = $this->getDoctrine()
-//            ->getManager()
-//            ->createQueryBuilder()
-//            ->from('AppBundle:Product', 'p')
-//            ->select('p')
-//            ->where('p.name LIKE :query')
-//            ->setParameter('query', '%'.$query.'%')
-//            ->getQuery()
-//            ->getResult();
-
-        $products = $this->getDoctrine()
+    public function searchAction(Request $request)
+    {
+        $data = $request->query->get('query');
+        $pagination = null;
+        
+        if ($data == '') {
+            $this->addFlash('danger', 'Aby wyszukać produkty, musisz wpisać jakąś frazę');
+        } else {
+            $getProductsQuery = $this->getDoctrine()
                 ->getRepository('AppBundle:Product')
-                ->createQueryBuilder('p')
-                ->select('p')
-                ->where('p.name LIKE :query')
-                ->orWhere('p.description LIKE :query')
-                ->setParameter('query', '%' . $query . '%')
-                ->getQuery()
-                ->getResult();
+                ->searchProductsQuery($data);
 
-        return $this->render('products/search.html.twig', [
-                    'query' => $query,
-                    'products' => $products
+            $paginator = $this->get('knp_paginator');
+            $pagination = $paginator->paginate(
+                $getProductsQuery,
+                $request->query->get('page', 1),
+                8
+            );
+        }
+
+        return $this->render('Products/search.html.twig', [
+            'products' => $pagination,
+            'query' => $data,
         ]);
+
     }
 
 }

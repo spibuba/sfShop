@@ -4,12 +4,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Category
  *
  * @ORM\Table(name="category")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CategoryRepository")
  */
 class Category
 {
@@ -28,7 +29,20 @@ class Category
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
+    
+    /**
+     * @Gedmo\Slug(fields={"name"})
+     * @ORM\Column(length=255, unique=true)
+     */
+    private $slug;
 
+    /**
+     *
+     * @var text
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
+    
     /**
      *
      * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
@@ -69,6 +83,44 @@ class Category
      * @return string 
      */
     public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Add products
+     *
+     * @param \AppBundle\Entity\Product $products
+     * @return Category
+     */
+    public function addProduct(\AppBundle\Entity\Product $products)
+    {
+        $this->products[] = $products;
+
+        return $this;
+    }
+
+    /**
+     * Remove products
+     *
+     * @param \AppBundle\Entity\Product $products
+     */
+    public function removeProduct(\AppBundle\Entity\Product $products)
+    {
+        $this->products->removeElement($products);
+    }
+
+    /**
+     * Get products
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProducts()
+    {
+        return $this->products;
+    }
+
+    public function __toString()
     {
         return $this->name;
     }

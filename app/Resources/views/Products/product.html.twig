@@ -1,6 +1,11 @@
-<div class="col-sm-6 col-md-3">
+<div class="col-sm-6 col-md-3 product-item">
     <div class="thumbnail clearfix">
-        <img src="http://placehold.it/240x200" alt="" class="img-thumbnail">
+        {% if product.imageName %}
+            <img src="{{ vich_uploader_asset(product, 'product_image') | imagine_filter('product_image_thumb') }}" alt="" class="img-thumbnail">
+        {% else %}
+            <img src="http://placehold.it/240x200" alt="" class="img-thumbnail">
+        {% endif %}
+        
         <div class="caption">
             <h3>{{ product.name }}</h3>
             <p>{{ product.description | truncate(50, true, ' (...)') }}</p>
@@ -9,7 +14,7 @@
             <div class="pull-left">
                 <p>
                     <a href="{{ path('basket_add', {'id': product.id}) }}" class="btn btn-primary" role="button">Koszyk</a> 
-                    <a href="{{ path('product_show', {'id': product.id}) }}" class="btn btn-default" role="button">Pokaż</a>
+                    <a href="{{ path('product_show', {'slug': product.slug}) }}" class="btn btn-default" role="button">Pokaż</a>
                 </p>
             </div>
             <div class="pull-right">

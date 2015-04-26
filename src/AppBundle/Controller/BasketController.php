@@ -4,17 +4,14 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use AppBundle\Entity\Product;
-use AppBundle\Form\BasketForm;
 
 class BasketController extends Controller
 {
     /**
      * @Route("/koszyk", name="basket")
-     * @Template()
      */
     public function indexAction(Request $request)
     {
@@ -24,10 +21,10 @@ class BasketController extends Controller
             
             $basket->updateQuantity($id, $quantity);
         }
-        
-        return array(
-            'basket' => $basket
-        );
+
+        return $this->render('Basket/index.html.twig', [
+            'basket' => $basket,
+        ]);
     }
 
     /**
@@ -36,7 +33,7 @@ class BasketController extends Controller
     public function addAction(Request $request, Product $product = null)
     {
         if (is_null($product)) {
-            $this->addFlash('error', 'Produkt, który próbujesz dodać nie został znaleziony!');
+            $this->addFlash('danger', 'Produkt, który próbujesz dodać nie został znaleziony!');
             return $this->redirect($request->headers->get('referer'));
         }
         
@@ -47,11 +44,11 @@ class BasketController extends Controller
           
         } catch (\Exception $e) {
             
-            $this->addFlash('error', $e->getMessage());
+            $this->addFlash('danger', $e->getMessage());
             return $this->redirect($request->headers->get('referer'));
         }
 
-        $this->addFlash('notice', sprintf('Produkt "%s" został dodany do koszyka', $product->getName()));
+        $this->addFlash('success', sprintf('Produkt "%s" został dodany do koszyka', $product->getName()));
 
         return $this->redirectToRoute('basket');
     }
@@ -66,30 +63,15 @@ class BasketController extends Controller
         try {
             $basket->remove($product);
 
-            //$this->addFlash('notice', 'Produkt ' . $product->getName() . ' został usunięty z koszyka');
-            $this->addFlash('notice', sprintf('Product %s został usunięty z koszyka', $product->getName()));
+            //$this->addFlash('success', 'Produkt ' . $product->getName() . ' został usunięty z koszyka');
+            $this->addFlash('success', sprintf('Product %s został usunięty z koszyka', $product->getName()));
 
         } catch (\Exception $ex) {
 
-            $this->addFlash('notice', $ex->getMessage());
+            $this->addFlash('danger', $ex->getMessage());
         }
 
         return $this->redirectToRoute('basket');
-    }
-
-    /**
-     * @Route("/koszyk/{id}/zaktualizuj-ilosc/{quantity}")
-     * @Template()
-     */
-    public function updateAction($id, $quantity)
-    {
-
-
-
-
-        return array(
-                // ...
-            );
     }
 
     /**
@@ -101,20 +83,19 @@ class BasketController extends Controller
             ->get('basket')
             ->clear();
 
-        $this->addFlash('notice', 'Koszyk został pomyślnie wyczyszczony.');
+        $this->addFlash('success', 'Koszyk został pomyślnie wyczyszczony.');
 
         return $this->redirectToRoute('basket');
     }
 
     /**
-     * @Route("/koszyk/kup")
-     * @Template()
+     * @Route("/koszyk/list")
      */
-    public function buyAction()
+    public function listAction()
     {
-        return array(
-                // ...
-            );
+        return $this->render('Basket/list.html.twig', [
+            'basket' => $this->get('basket'),
+        ]);
     }
-
+    
 }

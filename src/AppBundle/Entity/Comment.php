@@ -4,12 +4,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Comment
  *
  * @ORM\Table(name="comment")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CommentRepository")
  */
 class Comment
 {
@@ -54,13 +55,6 @@ class Comment
     private $nbVoteDown = 0;
     
     /**
-     * @var Product
-     * 
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="comments")
-     */
-    private $product;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="verified", type="boolean")
@@ -68,15 +62,30 @@ class Comment
     private $verified = false;
     
     /**
+     * @var Product
+     * 
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="comments")
+     */
+    private $product;
+    
+    /**
      * @var User
      * 
-     * @ORM\ManyToOne(targetEntity="user", inversedBy="Comments")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="comments")
      */
     private $user;
-    
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="CommentVote", mappedBy="comment")
+     */
+    private $votes;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime("now");
+        $this->votes = new ArrayCollection();
     }
 
     /**
@@ -230,10 +239,10 @@ class Comment
     /**
      * Set user
      *
-     * @param \AppBundle\Entity\user $user
+     * @param \AppBundle\Entity\User $user
      * @return Comment
      */
-    public function setUser(\AppBundle\Entity\user $user = null)
+    public function setUser(\AppBundle\Entity\User $user = null)
     {
         $this->user = $user;
 
@@ -243,10 +252,43 @@ class Comment
     /**
      * Get user
      *
-     * @return \AppBundle\Entity\user 
+     * @return \AppBundle\Entity\User 
      */
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Add votes
+     *
+     * @param \AppBundle\Entity\CommentVote $votes
+     * @return Comment
+     */
+    public function addVote(\AppBundle\Entity\CommentVote $votes)
+    {
+        $this->votes[] = $votes;
+
+        return $this;
+    }
+
+    /**
+     * Remove votes
+     *
+     * @param \AppBundle\Entity\CommentVote $votes
+     */
+    public function removeVote(\AppBundle\Entity\CommentVote $votes)
+    {
+        $this->votes->removeElement($votes);
+    }
+
+    /**
+     * Get votes
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getVotes()
+    {
+        return $this->votes;
     }
 }
